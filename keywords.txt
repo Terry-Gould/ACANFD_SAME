@@ -1,0 +1,31 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ACANFD_SAME_Settings	KEYWORD1
+CANMessage	KEYWORD1
+CANFDMessage	KEYWORD1
+ACANFD_SAME	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+beginFD	KEYWORD2
+end	KEYWORD2
+tryToSendReturnStatusFD	KEYWORD2
+receiveFD0	KEYWORD2
+availableFD0	KEYWORD2
+receiveFD1	KEYWORD2
+availableFD1	KEYWORD2
+dispatchReceivedMessage	KEYWORD2
+dispatchReceivedMessageFIFO0	KEYWORD2
+dispatchReceivedMessageFIFO1	KEYWORD2
+setEnableTransmitAck	KEYWORD2
+hasTransmitAck	KEYWORD2
+getTransmitAck	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
