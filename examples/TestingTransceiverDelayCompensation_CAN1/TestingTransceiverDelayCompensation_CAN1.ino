@@ -6,7 +6,7 @@
 // Setting the Transceiver Delay Compensation Value is required when
 // all the following conditions are met:
 //   - transmit CANFD frames
-//   - with bit rate swith ;
+//   - with bit rate switch ;
 //   - and data bit rate is > 1 Mbit/s
 //
 //  The mTransceiverDelayCompensation property of the ACANFD_SAME_Settings class
@@ -25,12 +25,12 @@
 //            Error count: Tx 128, Rx 0, Transceiver Delay Compensation Value 8
 //  and both TxCAN and RxCAN are ON.
 //  The first time a CANFD frame is submitted, it is immediately emitted. But
-//  as the the controller is alone on the bus (no CAN connection), an ACK SLOT
-//  occurs. This error increments the Tx Error Count by 8 with the controller is
+//  as the controller is alone on the bus (no CAN connection), an ACK SLOT
+//  occurs. This error increments the Tx Error Count by 8 while the controller is
 //  error active, and by 0 when it is error passive. Thus the frame is re-emitted indefinitely.
 //  The transmit buffer is never freed.
 //
-//  Incorrect Transceiver Delay Compensation Value Setting. For exemple,
+//  Incorrect Transceiver Delay Compensation Value Setting. For example,
 //  set mTransceiverDelayCompensation to 0, and use fastest bit rate (1 MBit/s, x8).
 //  The Arduino monitor displays:
 //            can configuration ok
@@ -50,12 +50,12 @@
 //-----------------------------------------------------------------
 // IMPORTANT:
 //   <ACANFD_SAME.h> should be included only from the .ino file
-//   From an other file, include <ACANFD_SAME-from-cpp.h>
+//   From another file, include <ACANFD_SAME-from-cpp.h>
 //   Before including <ACANFD_SAME.h>, you should define
 //   Message RAM size for CAN0 and Message RAM size for CAN1.
 //   Maximum required size is 4,352 (4,352 32-bit words).
 //   A 0 size means the CAN module is not configured; its TxCAN and RxCAN pins
-//   can be freely used for an other function.
+//   can be freely used for another function.
 //   The begin method checks if actual size is greater or equal to required size.
 //   Hint: if you do not want to compute required size, print
 //   can1.messageRamRequiredMinimumSize () for getting it.
@@ -64,6 +64,11 @@
 #define CAN1_MESSAGE_RAM_SIZE (1728)
 
 #include <ACANFD_SAME.h>
+
+// Required only when TinyUSB is selected, so the external Adafruit TinyUSB Library provides USB Serial.
+#ifdef USE_TINYUSB
+#include <Adafruit_TinyUSB.h>
+#endif
 
 //-----------------------------------------------------------------
 
@@ -75,8 +80,8 @@ void setup() {
   Serial.println("CANFD DelayCompensation test");
 
   // Change this to PIN_CAN_STANDBY for Feather-M4-CAN and turn on PIN_CAN_BOOSTEN
-  pinMode(PIN_CAN_STANDBY, OUTPUT);
-  digitalWrite(PIN_CAN_STANDBY, LOW);  // turn off STANDBY
+  pinMode(PIN_CAN1_STANDBY, OUTPUT);
+  digitalWrite(PIN_CAN1_STANDBY, LOW);  // turn off STANDBY
 
   ACANFD_SAME_Settings settings(ACANFD_SAME_Settings::CLOCK_48MHz, 1000 * 1000, DataBitRateFactor::x8);
 

@@ -5,7 +5,7 @@
 
 // IMPORTANT:
 //   <ACANFD_SAME.h> should be included only from the .ino file
-//   From an other file, include <ACANFD_SAME-from-cpp.h>
+//   From another file, include <ACANFD_SAME-from-cpp.h>
 //   Before including <ACANFD_SAME.h>, you should define
 //   Message RAM size for CAN0 and Message RAM size for CAN1.
 //   Maximum required size is 4,352 (4,352 32-bit words).
@@ -19,6 +19,11 @@
 #define CAN1_MESSAGE_RAM_SIZE (0)  // Even if only using CAN0, you need to include this.
 
 #include <ACANFD_SAME.h>
+
+// Required only when TinyUSB is selected, so the external Adafruit TinyUSB Library provides USB Serial.
+#ifdef USE_TINYUSB
+#include <Adafruit_TinyUSB.h>
+#endif
 
 void setup() {
   Serial.begin(115200);

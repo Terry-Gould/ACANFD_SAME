@@ -1,6 +1,6 @@
 // DualChannelCallbacks_CAN20.ino
-// The example shows you how you can use callbacks to recieve known IDs instead of polling.
-// This is usefull for applications where you want to act on certain IDs.
+// The example shows you how you can use callbacks to receive known IDs instead of polling.
+// This is useful for applications where you want to act on certain IDs.
 // This example configures both CAN0 and CAN1 in normal CAN FD capable mode, but sends
 // ordinary Classic CAN 2.0 data frames.
 //
@@ -40,6 +40,11 @@
 #define CAN1_MESSAGE_RAM_SIZE (4352)
 
 #include <ACANFD_SAME.h>
+
+// Required only when TinyUSB is selected, so the external Adafruit TinyUSB Library provides USB Serial.
+#ifdef USE_TINYUSB
+#include <Adafruit_TinyUSB.h>
+#endif
 
 // Called when CAN0 receives a standard frame matching ID 0x240.
 static void callBackFor0x240(const CANFDMessage& /* inMessage */) {

@@ -5,7 +5,7 @@
 
 // IMPORTANT:
 //   <ACANFD_SAME.h> should be included only from the .ino file
-//   From an other file, include <ACANFD_SAME-from-cpp.h>
+//   From another file, include <ACANFD_SAME-from-cpp.h>
 //   Before including <ACANFD_SAME.h>, you should define
 //   Message RAM size for CAN0 and Message RAM size for CAN1.
 //   Maximum required size is 4,352 (4,352 32-bit words).
@@ -20,6 +20,11 @@
 
 #include <ACANFD_SAME.h>
 
+// Required only when TinyUSB is selected, so the external Adafruit TinyUSB Library provides USB Serial.
+#ifdef USE_TINYUSB
+#include <Adafruit_TinyUSB.h>
+#endif
+
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
@@ -30,7 +35,7 @@ void setup() {
 
   // Change this to PIN_CAN_STANDBY for Feather-M4-CAN and turn on PIN_CAN_BOOSTEN
   pinMode(PIN_CAN1_STANDBY, OUTPUT);
-  digitalWrite(PIN_CAN_STANDBY, LOW);  // turn off STANDBY
+  digitalWrite(PIN_CAN1_STANDBY, LOW);  // turn off STANDBY
 
   ACANFD_SAME_Settings settings(ACANFD_SAME_Settings::CLOCK_48MHz, 500 * 1000, DataBitRateFactor::x4);
 
@@ -142,7 +147,7 @@ void loop() {
   if (gOk && can1.receiveFD1(frame)) {
     gReceiveCountFIFO1 += 1;
   }
-  //--- Blink led and display
+
   if (gBlinkDate <= millis()) {
     gBlinkDate += PERIOD;
     Serial.print("Sent: ");

@@ -4,7 +4,7 @@
 
 // IMPORTANT:
 //   <ACANFD_SAME.h> should be included only from the .ino file
-//   From an other file, include <ACANFD_SAME-from-cpp.h>
+//   From another file, include <ACANFD_SAME-from-cpp.h>
 //   Before including <ACANFD_SAME.h>, you should define
 //   Message RAM size for CAN0 and Message RAM size for CAN1.
 //   Maximum required size is 4,352 (4,352 32-bit words).
@@ -18,6 +18,11 @@
 #define CAN1_MESSAGE_RAM_SIZE (896)
 
 #include <ACANFD_SAME.h>
+
+// Required only when TinyUSB is selected, so the external Adafruit TinyUSB Library provides USB Serial.
+#ifdef USE_TINYUSB
+#include <Adafruit_TinyUSB.h>
+#endif
 
 static ACANFD_SAME_FIFO gBuffer;
 
@@ -34,7 +39,7 @@ void setup() {
 
   // Change this to PIN_CAN_STANDBY for Feather-M4-CAN and turn on PIN_CAN_BOOSTEN
   pinMode(PIN_CAN1_STANDBY, OUTPUT);
-  digitalWrite(PIN1_CAN_STANDBY, LOW);  // turn off STANDBY
+  digitalWrite(PIN_CAN1_STANDBY, LOW);  // turn off STANDBY
 
   ACANFD_SAME_Settings settings(ACANFD_SAME_Settings::CLOCK_48MHz, 500 * 1000, DataBitRateFactor::x4);
 
