@@ -162,7 +162,7 @@ void loop() {
     frame.data[6] = 0x77;
     frame.data[7] = 0x88;
 
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(frame);
+    const uint32_t sendStatus = can1.sendFrame(frame);
     if (sendStatus == 0) {
       Serial.println("sent");
     } else {
@@ -363,7 +363,7 @@ Check your transceiver datasheet and board schematic for the correct polarity.
 
 `CANFDMessage` can be used for both Classic CAN and CAN FD.
 
-Classic CAN 2.0 data frame:
+For normal use, send frames with `sendFrame()`:
 
 ```cpp
 CANFDMessage frame;
@@ -380,8 +380,10 @@ frame.data[5] = 0x06;
 frame.data[6] = 0x07;
 frame.data[7] = 0x08;
 
-const uint32_t status = can1.tryToSendReturnStatusFD(frame);
+const uint32_t status = can1.sendFrame(frame);
 ```
+
+`sendFrame()` sends through the normal transmit FIFO/Queue path. It ignores `frame.idx`, so it is the recommended function for normal sketches, gateway sketches, and pass-through sketches that forward a frame received from another CAN channel.
 
 CAN FD frame with bit-rate switching:
 
@@ -395,7 +397,7 @@ for (uint8_t i = 0; i < frame.len; i++) {
   frame.data[i] = i;
 }
 
-const uint32_t status = can1.tryToSendReturnStatusFD(frame);
+const uint32_t status = can1.sendFrame(frame);
 ```
 
 Valid CAN FD lengths are:
@@ -412,7 +414,7 @@ frame.pad();
 
 to pad an intermediate length to the next valid CAN FD DLC size.
 
-`tryToSendReturnStatusFD()` returns `0` if the frame was accepted into the transmit path.
+`sendFrame()` returns `0` if the frame was accepted into the transmit path.
 
 Transmit status values:
 
@@ -423,6 +425,88 @@ Transmit status values:
 | 2 | `kTransmitBufferIndexTooLarge` | Dedicated TX buffer index is out of range |
 | 3 | `kTransmitBufferOverflow` | Driver/hardware transmit queue is full |
 
+### Sending with a dedicated TX buffer
+
+For advanced applications, a frame can be sent through a specific dedicated TX buffer:
+
+```cpp
+CANFDMessage frame;
+frame.id = 0x123;
+frame.ext = false;
+frame.type = CANFDMessage::CAN_DATA;
+frame.len = 8;
+
+const uint32_t status = can1.sendFrameToBuffer(frame, 0);
+```
+
+`sendFrameToBuffer(frame, 0)` sends through dedicated TX buffer 0.
+
+The buffer index is zero-based:
+
+```text
+0 = dedicated TX buffer 0
+1 = dedicated TX buffer 1
+2 = dedicated TX buffer 2
+```
+
+The number of available dedicated TX buffers is configured with:
+
+```cpp
+settings.mHardwareDedicacedTxBufferCount
+```
+
+If the selected buffer does not exist, `sendFrameToBuffer()` returns `kTransmitBufferIndexTooLarge`.
+
+If the selected buffer exists but is already waiting to transmit, `sendFrameToBuffer()` returns `kTransmitBufferOverflow`.
+
+### Compatibility send function
+
+The original ACANFD-style send function is still available:
+
+```cpp
+const uint32_t status = can1.tryToSendReturnStatusFD(frame);
+```
+
+This function uses `frame.idx` to select the transmit path:
+
+```text
+frame.idx = 0      normal TX FIFO
+frame.idx = 1      dedicated TX buffer 0
+frame.idx = 2      dedicated TX buffer 1
+frame.idx = N      dedicated TX buffer N - 1
+```
+
+The same behaviour is also available through the clearer compatibility alias:
+
+```cpp
+const uint32_t status = can1.sendFrameUsingIndex(frame);
+```
+
+`sendFrameUsingIndex()` is only an alias for `tryToSendReturnStatusFD()`.
+
+For new sketches, prefer `sendFrame()` or `sendFrameToBuffer()` because they make the transmit path explicit.
+
+### Note about `frame.idx`
+
+`frame.idx` is a driver field inherited from the original ACANFD-style API.
+
+On receive, the library may use `frame.idx` to store the receive filter index that matched the frame.
+
+On transmit, `tryToSendReturnStatusFD()` and `sendFrameUsingIndex()` use `frame.idx` as a transmit path selector.
+
+This means a received frame should not normally be forwarded with `tryToSendReturnStatusFD()` unless you intentionally want to reuse the received `idx` value as transmit control.
+
+For gateway and pass-through sketches, use:
+
+```cpp
+can1.sendFrame(frame);
+```
+
+instead of:
+
+```cpp
+can1.tryToSendReturnStatusFD(frame);
+```
 ## Receiving messages
 
 Polling FIFO0:

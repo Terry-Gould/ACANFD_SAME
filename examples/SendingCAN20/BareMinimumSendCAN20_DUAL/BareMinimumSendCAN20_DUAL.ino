@@ -95,9 +95,9 @@ void loop() {
     frame1.data[6] = 0x77;
     frame1.data[7] = 0x88;
 
-    can0.tryToSendReturnStatusFD(frame0);
+    can0.sendFrame(frame0);
     Serial.println("CAN0 frame sent");
-    can1.tryToSendReturnStatusFD(frame1);
+    can1.sendFrame(frame1);
     Serial.println("CAN1 frame sent");
   }
 }

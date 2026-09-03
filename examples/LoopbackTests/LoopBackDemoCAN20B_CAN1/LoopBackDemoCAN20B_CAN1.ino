@@ -113,7 +113,7 @@ void loop() {
     frame.data[6] = 0x77;
     frame.data[7] = 0x88;
     
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(frame);
+    const uint32_t sendStatus = can1.sendFrame(frame);
     
     if (sendStatus == 0) {
       gSentCount += 1;

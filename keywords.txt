@@ -13,6 +13,9 @@ ACANFD_SAME	KEYWORD1
 
 beginFD	KEYWORD2
 end	KEYWORD2
+sendFrame	KEYWORD2
+sendFrameToBuffer	KEYWORD2
+sendFrameUsingIndex	KEYWORD2
 tryToSendReturnStatusFD	KEYWORD2
 receiveFD0	KEYWORD2
 availableFD0	KEYWORD2

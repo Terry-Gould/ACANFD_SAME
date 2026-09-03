@@ -205,6 +205,9 @@ class ACANFD_SAME {
   public: bool sendBufferNotFullForIndex (const uint32_t inTxBufferIndex) ;
 
 //--- Transmitting messages and return status (returns 0 if ok)
+  public: uint32_t sendFrame (const CANFDMessage & inMessage) ;
+  public: uint32_t sendFrameToBuffer (const CANFDMessage & inMessage, const uint8_t inTxBufferIndex) ;
+  public: uint32_t sendFrameUsingIndex (const CANFDMessage & inMessage) ;
   public: uint32_t tryToSendReturnStatusFD (const CANFDMessage & inMessage) ;
   public: static const uint32_t kInvalidMessage              = 1 ;
   public: static const uint32_t kTransmitBufferIndexTooLarge = 2 ;

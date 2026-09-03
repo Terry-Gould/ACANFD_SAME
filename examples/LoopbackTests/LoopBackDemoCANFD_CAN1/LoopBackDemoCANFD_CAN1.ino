@@ -109,7 +109,6 @@ void loop() {
   if (gBlinkDate <= millis()) {
     gBlinkDate += PERIOD;
     const uint32_t r = pseudoRandomValue();
-    gSentFrame.idx = 0;
     gSentFrame.ext = (r & (1 << 29)) != 0;
     gSentFrame.type = CANFDMessage::Type(r >> 30);
     gSentFrame.id = r & 0x1FFFFFFF;
@@ -134,7 +133,7 @@ void loop() {
         }
         break;
     }
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(gSentFrame);
+    const uint32_t sendStatus = can1.sendFrame(gSentFrame);
 
     if (sendStatus == 0) {
       gSentCount += 1;

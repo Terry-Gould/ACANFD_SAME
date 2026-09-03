@@ -204,7 +204,7 @@ void loop() {
     CANFDMessage frame;
     frame.id = gSentIdentifier;
     gSentIdentifier += 1;
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(frame);
+    const uint32_t sendStatus = can1.sendFrame(frame);
     if (sendStatus != 0) {
       gOk = false;
       Serial.print("Sent error 0x");
@@ -222,7 +222,7 @@ void loop() {
     frame.id = gSentIdentifier;
     frame.ext = true;
     gSentIdentifier += 1;
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(frame);
+    const uint32_t sendStatus = can1.sendFrame(frame);
     if (sendStatus != 0) {
       gOk = false;
       Serial.print("Sent error 0x");

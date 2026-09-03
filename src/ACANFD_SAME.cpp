@@ -402,6 +402,61 @@ bool ACANFD_SAME::sendBufferNotFullForIndex (const uint32_t inMessageIndex) {
 
 //----------------------------------------------------------------------------------------
 
+uint32_t ACANFD_SAME::sendFrame (const CANFDMessage & inMessage) {
+  noInterrupts () ;
+    uint32_t sendStatus = 0 ;
+    if (!inMessage.isValid ()) {
+      sendStatus = kInvalidMessage ;
+    }else{ // Send via Tx FIFO ?
+      const uint32_t txfqs = mModulePtr->TXFQS.reg ; // Page 1165
+      const uint32_t hardwareTransmitFifoFreeLevel = txfqs & 0x3F ; // Page 1165
+      if ((hardwareTransmitFifoFreeLevel > 0) && mDriverTransmitFIFO.isEmpty ()) {
+        const uint32_t putIndex = (txfqs >> 16) & 0x1F ;
+        writeTxBuffer (inMessage, putIndex) ;
+        if (isTransmitAckEnabled ()) {
+          mCopyOfMessagesInHardwareTransmitFIFO.append (inMessage) ;
+        }
+      }else if (mDriverTransmitFIFO.isFull ()) {
+        sendStatus = kTransmitBufferOverflow ;
+      }else{
+        mDriverTransmitFIFO.append (inMessage) ;
+      }
+    }
+  interrupts () ;
+  return sendStatus ;
+}
+
+//----------------------------------------------------------------------------------------
+
+uint32_t ACANFD_SAME::sendFrameToBuffer (const CANFDMessage & inMessage, const uint8_t inTxBufferIndex) {
+  noInterrupts () ;
+    uint32_t sendStatus = 0 ;
+    if (!inMessage.isValid ()) {
+      sendStatus = kInvalidMessage ;
+    }else{
+      const uint32_t numberOfDedicacedTxBuffers = (mModulePtr->TXBC.reg >> 16) & 0x3F ; // Page 1164
+      if (inTxBufferIndex < numberOfDedicacedTxBuffers) {
+        const bool hardwareTxBufferIsEmpty = (mModulePtr->TXBRP.reg & (1U << inTxBufferIndex)) == 0 ; // Page 1167
+        if (hardwareTxBufferIsEmpty) {
+          writeTxBuffer (inMessage, inTxBufferIndex) ;
+        }else{
+          sendStatus = kTransmitBufferOverflow ;
+        }
+      }else{
+        sendStatus = kTransmitBufferIndexTooLarge ;
+      }
+    }
+  interrupts () ;
+  return sendStatus ;
+}
+
+//----------------------------------------------------------------------------------------
+
+uint32_t ACANFD_SAME::sendFrameUsingIndex (const CANFDMessage & inMessage) {
+  return tryToSendReturnStatusFD (inMessage) ;
+}
+//----------------------------------------------------------------------------------------
+
 uint32_t ACANFD_SAME::tryToSendReturnStatusFD (const CANFDMessage & inMessage) {
   noInterrupts () ;
     uint32_t sendStatus = 0 ;

@@ -161,7 +161,7 @@ void loop() {
     for (uint8_t i = 0; i < frame.len; i++) {
       frame.data[i] = i;
     }
-    const uint32_t sendStatus = can1.tryToSendReturnStatusFD(frame);
+    const uint32_t sendStatus = can1.sendFrame(frame);
     if (sendStatus == 0) {
       gSentCount += 1;
       Serial.print("Sent ");

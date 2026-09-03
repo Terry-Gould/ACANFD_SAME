@@ -53,11 +53,11 @@ static void forwardCAN1ToCAN0(void) {
   CANFDMessage frame;
 
   while (can1.receiveFD0(frame)) {
-    can0.tryToSendReturnStatusFD(frame);
+    can0.sendFrame(frame);
   }
 
   while (can1.receiveFD1(frame)) {
-    can0.tryToSendReturnStatusFD(frame);
+    can0.sendFrame(frame);
   }
 }
 
@@ -65,7 +65,7 @@ static void forwardCAN0ToCAN1FIFO1(void) {
   CANFDMessage frame;
 
   while (can0.receiveFD1(frame)) {
-    can1.tryToSendReturnStatusFD(frame);
+    can1.sendFrame(frame);
   }
 }
 
@@ -86,7 +86,7 @@ static void forwardFiltered0x240CAN0ToCAN1(void) {
       outFrame.data[1] = (uint8_t)(value & 0xFF);
     }
 
-    can1.tryToSendReturnStatusFD(outFrame);
+    can1.sendFrame(outFrame);
   }
 }
 

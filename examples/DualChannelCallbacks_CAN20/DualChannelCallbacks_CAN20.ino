@@ -179,7 +179,7 @@ void loop() {
     frame7FF.data[5] = 0x66;
     frame7FF.data[6] = 0x77;
     frame7FF.data[7] = 0x88;
-    const uint32_t sendStatus7FF = can0.tryToSendReturnStatusFD(frame7FF);
+    const uint32_t sendStatus7FF = can0.sendFrame(frame7FF);
     if (sendStatus7FF == 0) {
       gSentCount7FF += 1;
       Serial.print("Sent CAN0 ");
@@ -204,7 +204,7 @@ void loop() {
     frame696.data[5] = 0x66;
     frame696.data[6] = 0x77;
     frame696.data[7] = 0x88;
-    const uint32_t sendStatus696 = can1.tryToSendReturnStatusFD(frame696);
+    const uint32_t sendStatus696 = can1.sendFrame(frame696);
     if (sendStatus696 == 0) {
       gSentCount696 += 1;
       Serial.print("Sent CAN1 ");

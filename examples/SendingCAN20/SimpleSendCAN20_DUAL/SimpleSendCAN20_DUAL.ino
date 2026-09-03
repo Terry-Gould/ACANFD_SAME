@@ -252,16 +252,16 @@ void loop() {
     frame1.data[7] = 0x88;
 
     // This sends the message:
-    // Creating the variable 'sendStatus' is not strictly needed. '.tryToSendReturnStatusFD' returns an error code so this can be useful for debug.
+    // Creating the variable 'sendStatus' is not strictly needed. sendFrame returns an error code so this can be useful for debug.
     // You could just use:
-    // can0.tryToSendReturnStatusFD(frame)
-    // Remember 'frame' comes from the variable name we created above, we could have used can0.tryToSendReturnStatusFD(frame201) or similar.
-    const uint32_t sendStatus0 = can0.tryToSendReturnStatusFD(frame0);
-    const uint32_t sendStatus1 = can1.tryToSendReturnStatusFD(frame1);
+    // can0.sendFrame(frame)
+    // Remember 'frame' comes from the variable name we created above, we could have used can0.sendFrame(frame201) or similar.
+    const uint32_t sendStatus0 = can0.sendFrame(frame0);
+    const uint32_t sendStatus1 = can1.sendFrame(frame1);
 
-    // This just prints to tell us if the .tryToSendReturnStatusFD was ok or if there was an error.
+    // This just prints to tell us if sendFrame was ok or if there was an error.
     // This is only for debugging. If you do not care about reporting errors, you can omit this block.
-    // Delete this if you are only using: can0.tryToSendReturnStatusFD(frame);
+    // Delete this if you are only using: can0.sendFrame(frame);
     if (sendStatus0 == 0) {
       sentCount0 += 1;
       Serial.print("CAN0 Sent ");
